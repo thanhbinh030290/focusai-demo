@@ -1,20 +1,11 @@
 from flask import Flask, request, render_template_string
+from openai import OpenAI
+import os
 
 app = Flask(__name__)
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 points = {}
-
-def simple_ai(question):
-    question = question.lower()
-
-    if "pitago" in question:
-        return "Định lý Pitago: Trong tam giác vuông, bình phương cạnh huyền bằng tổng bình phương hai cạnh góc vuông."
-    elif "đạo hàm" in question:
-        return "Đạo hàm biểu thị tốc độ thay đổi của một hàm số tại một điểm."
-    elif "cách mạng tháng 8" in question:
-        return "Cách mạng tháng 8 năm 1945 đã giúp Việt Nam giành độc lập."
-    else:
-        return "Câu hỏi rất hay! Hãy thử diễn đạt rõ hơn để AI có thể hỗ trợ tốt hơn."
 
 HTML = """
 <!DOCTYPE html>
@@ -36,7 +27,7 @@ HTML = """
             background: white;
             padding: 30px;
             border-radius: 15px;
-            width: 400px;
+            width: 420px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             text-align: center;
         }
@@ -73,8 +64,9 @@ HTML = """
             margin-top: 20px;
             text-align: left;
             background: #f4f6ff;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
+            font-size: 14px;
         }
 
         .score {
@@ -82,14 +74,21 @@ HTML = """
             font-weight: bold;
             color: #444;
         }
+
+        .footer {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #888;
+        }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>FocusAI 🤖</h1>
+
         <form method="post">
-            <input name="username" placeholder="Nhập tên của bạn"><br>
-            <input name="question" placeholder="Nhập câu hỏi..."><br>
+            <input name="username" placeholder="Nhập tên của bạn" required><br>
+            <input name="question" placeholder="Nhập câu hỏi..." required><br>
             <button type="submit">Hỏi AI</button>
         </form>
 
@@ -105,7 +104,44 @@ HTML = """
             Điểm của bạn: {{score}}
         </div>
         {% endif %}
+
+        <div class="footer">
+            Powered by AI 🚀
+        </div>
     </div>
 </body>
 </html>
 """
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    answer = None
+    score = None
+
+    if request.method == "POST":
+        username = request.form["username"]
+        question = request.form["question"]
+
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "Bạn là gia sư AI thân thiện, giải thích dễ hiểu cho học sinh."},
+                    {"role": "user", "content": question}
+                ]
+            )
+            answer = response.choices[0].message.content
+        except Exception as e:
+            answer = f"Lỗi AI: {str(e)}"
+
+        if username not in points:
+            points[username] = 0
+
+        points[username] += 10
+        score = points[username]
+
+    return render_template_string(HTML, answer=answer, score=score)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
