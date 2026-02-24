@@ -119,6 +119,8 @@ HTML = """
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+  @app.route("/", methods=["GET", "POST"])
+def home():
     answer = None
     score = None
 
@@ -126,7 +128,7 @@ def home():
         username = request.form["username"]
         question = request.form["question"]
 
-                   if client:
+        if client:
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
