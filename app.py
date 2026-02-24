@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template_string
-import os
 
 app = Flask(__name__)
 
@@ -65,6 +64,7 @@ HTML = """
             padding: 12px;
             border-radius: 8px;
             font-size: 14px;
+            white-space: pre-line;
         }
 
         .score {
@@ -113,8 +113,6 @@ HTML = """
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-  @app.route("/", methods=["GET", "POST"])
-def home():
     answer = None
     score = None
 
@@ -122,7 +120,13 @@ def home():
         username = request.form["username"]
         question = request.form["question"]
 
-       answer = f"AI đang giải thích câu hỏi: {question}\n\nĐịnh lý Pitago: Trong tam giác vuông, bình phương cạnh huyền bằng tổng bình phương hai cạnh góc vuông."
+        # Demo AI thông minh cơ bản
+        if "pitago" in question.lower():
+            explanation = "Định lý Pitago: Trong tam giác vuông, bình phương cạnh huyền bằng tổng bình phương hai cạnh góc vuông."
+        else:
+            explanation = "AI đang phân tích câu hỏi của bạn và đưa ra lời giải phù hợp."
+
+        answer = f"{username}, đây là phần giải thích cho bạn:\n\n{explanation}"
 
         if username not in points:
             points[username] = 0
