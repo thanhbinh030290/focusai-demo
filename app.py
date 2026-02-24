@@ -126,7 +126,7 @@ def home():
         username = request.form["username"]
         question = request.form["question"]
 
-        try:
+                   if client:
             response = client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
@@ -135,8 +135,8 @@ def home():
                 ]
             )
             answer = response.choices[0].message.content
-        except Exception as e:
-            answer = f"Lỗi AI: {str(e)}"
+        else:
+            answer = f"Demo AI trả lời cho câu hỏi: {question}"
 
         if username not in points:
             points[username] = 0
