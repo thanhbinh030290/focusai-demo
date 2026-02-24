@@ -21,7 +21,6 @@ HTML = """
             align-items: center;
             min-height: 100vh;
         }
-
         .card {
             background: white;
             padding: 25px;
@@ -30,9 +29,6 @@ HTML = """
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             text-align: center;
         }
-
-        h1 { margin-bottom: 10px; }
-
         input {
             width: 92%;
             padding: 10px;
@@ -40,7 +36,6 @@ HTML = """
             border-radius: 8px;
             border: 1px solid #ccc;
         }
-
         button {
             background: #667eea;
             color: white;
@@ -51,9 +46,7 @@ HTML = """
             font-weight: bold;
             margin-top: 8px;
         }
-
         button:hover { background: #5563c1; }
-
         .answer {
             margin-top: 15px;
             text-align: left;
@@ -63,18 +56,15 @@ HTML = """
             font-size: 14px;
             white-space: pre-line;
         }
-
         .score {
             margin-top: 10px;
             font-weight: bold;
         }
-
         .badge {
             margin-top: 8px;
             color: #ff9800;
             font-weight: bold;
         }
-
         .warning {
             background: #fff3cd;
             padding: 10px;
@@ -82,7 +72,6 @@ HTML = """
             margin-top: 10px;
             font-size: 14px;
         }
-
         .footer {
             margin-top: 12px;
             font-size: 12px;
@@ -138,7 +127,7 @@ HTML = """
 </html>
 """
 
-# ----------- LOGIC AI ------------
+# -------- LOGIC --------
 
 def detect_emotion(text):
     sad_keywords = ["mệt", "chán", "áp lực", "stress", "buồn", "không muốn học", "lo lắng"]
@@ -150,15 +139,14 @@ def detect_emotion(text):
 
 def tutor_logic(question):
     q = question.lower()
-
     if "pitago" in q:
         return "Định lý Pitago: Trong tam giác vuông, bình phương cạnh huyền bằng tổng bình phương hai cạnh góc vuông."
     elif "đạo hàm" in q:
         return "Đạo hàm là giới hạn của tỉ số giữa sự thay đổi của hàm số và biến số khi biến số tiến đến 0."
     elif "tiếng anh" in q:
-        return "Mẹo học tiếng Anh: Mỗi ngày 10 phút từ vựng + 5 phút nghe là đủ để tạo tiến bộ dài hạn."
+        return "Mẹo học tiếng Anh: mỗi ngày 10 phút từ vựng + 5 phút nghe để tạo tiến bộ dài hạn."
     else:
-        return "AI đang phân tích câu hỏi của bạn và đưa ra hướng học tập phù hợp theo chương trình Bộ Giáo dục."
+        return "AI đang phân tích câu hỏi và đưa ra hướng học phù hợp theo chương trình Bộ Giáo dục."
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -174,11 +162,10 @@ def home():
         # Giả lập screen time
         if "mock" in request.form:
             username = request.form.get("username")
-
             if username:
-                warning = f"{username}, bạn đã dùng mạng xã hội 45 phút. Thử làm 1 quiz 10 phút để giữ streak nhé! 🔥"
+                warning = f"{username}, bạn đã dùng MXH 45 phút. Thử làm 1 quiz 10 phút để giữ streak nhé! 🔥"
             else:
-                warning = "Vui lòng nhập tên để giả lập."
+                warning = "Vui lòng nhập tên."
 
         else:
             username = request.form["username"]
@@ -186,10 +173,10 @@ def home():
 
             # Health Guard
             if detect_emotion(question):
-                answer = f"{username}, mình cảm nhận bạn đang hơi áp lực. Hãy thử bài thở 4-4-4: hít vào 4 giây, giữ 4 giây, thở ra 4 giây. Mình luôn ở đây để hỗ trợ bạn 💙"
+                answer = f"{username}, mình cảm nhận bạn đang hơi áp lực. Thử bài thở 4-4-4: hít vào 4 giây, giữ 4 giây, thở ra 4 giây. Mình luôn ở đây với bạn 💙"
             else:
                 explanation = tutor_logic(question)
-                answer = f"{username}, đây là phần giải thích cho bạn:\n\n{explanation}"
+                answer = f"{username}, đây là phần giải thích:\n\n{explanation}"
 
             # Tính điểm
             if username not in points:
@@ -202,7 +189,7 @@ def home():
             score = points[username]
             level = score // 50 + 1
 
-            # Badge system
+            # Badge
             if score >= 100:
                 badge = "Chiến binh Focus"
             elif streaks[username] >= 5:
@@ -218,7 +205,3 @@ def home():
         badge=badge,
         warning=warning
     )
-
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
