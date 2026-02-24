@@ -1,13 +1,7 @@
 from flask import Flask, request, render_template_string
-from openai import OpenAI
 import os
 
 app = Flask(__name__)
-api_key = os.getenv("OPENAI_API_KEY")
-client = None
-
-if api_key:
-    client = OpenAI(api_key=api_key)
 
 points = {}
 
@@ -128,17 +122,7 @@ def home():
         username = request.form["username"]
         question = request.form["question"]
 
-        if client:
-            response = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": "Bạn là gia sư AI thân thiện, giải thích dễ hiểu cho học sinh."},
-                    {"role": "user", "content": question}
-                ]
-            )
-            answer = response.choices[0].message.content
-        else:
-            answer = f"Demo AI trả lời cho câu hỏi: {question}"
+       answer = f"AI đang giải thích câu hỏi: {question}\n\nĐịnh lý Pitago: Trong tam giác vuông, bình phương cạnh huyền bằng tổng bình phương hai cạnh góc vuông."
 
         if username not in points:
             points[username] = 0
